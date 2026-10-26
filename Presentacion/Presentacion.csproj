@@ -8,7 +8,14 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>SistemaContable.Presentacion</RootNamespace>
 		<AssemblyName>Presentacion</AssemblyName>
+		<ApplicationIcon>Resource\Logo-Iglesia.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Update="Resource\Logo-Iglesia.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Entidad\Entidad.csproj" />
