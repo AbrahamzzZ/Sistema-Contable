@@ -5,7 +5,7 @@ namespace SistemaContable.Datos.Repository
     public class UsuarioRepository
     {
         public Usuario? ObtenerParaLogin(string username) =>
-            DbHelper.Obtener<Usuario>("SP_USUARIO_LOGIN", new
+            DbHelper.Obtener<Usuario>("SP_LOGIN", new
             {
                 USERNAME = username
             });
@@ -18,11 +18,11 @@ namespace SistemaContable.Datos.Repository
 
         /// <summary>usuario.Clave debe llegar YA hasheada desde Negocio. Devuelve el ID nuevo.</summary>
         public int Insertar(Usuario usuario) =>
-            DbHelper.Escalar<int>("SP_USUARIO_INSERTAR", new
+            DbHelper.Escalar<int>("SP_REGISTRAR_USUARIO", new
             {
                 USERNAME = usuario.Username,
                 NOMBRE_COMPLETO = usuario.Nombre_Completo,
-                CORREO = usuario.Correo_Electronico,
+                CORREO_ELECTRONICO = usuario.Correo_Electronico,
                 CLAVE = usuario.Clave
             });
 
@@ -38,7 +38,7 @@ namespace SistemaContable.Datos.Repository
             {
                 ID_USUARIO = usuario.Id_Usuario,
                 NOMBRE_COMPLETO = usuario.Nombre_Completo,
-                CORREO = usuario.Correo_Electronico
+                CORREO_ELECTRONICO = usuario.Correo_Electronico
             });
 
         /// <summary>claveHash debe llegar YA hasheada desde Negocio.</summary>
