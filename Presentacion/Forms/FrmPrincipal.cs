@@ -1,6 +1,10 @@
-﻿using SistemaContable.Presentacion.Ui;
+﻿using SistemaContable.Entidad;
+using SistemaContable.Presentacion.Ui;
 using SistemaContable.Presentacion.Ui.Controles;
 using SistemaContable.Presentacion.View;
+using SistemaContable.Presentacion.View.Categorias;
+using SistemaContable.Presentacion.View.Movimientos;
+using SistemaContable.Presentacion.View.Usuarios;
 using SistemaContable.Utilities;
 using System.Globalization;
 
@@ -232,18 +236,21 @@ namespace SistemaContable.Presentacion.Forms
             Control vista = seccion switch
             {
                 Secciones.Inicio => new Inicio(Navegar),
+                Secciones.RegistrarIngreso => new VistaMovimiento(TipoMovimiento.Ingreso, Navegar),
+                Secciones.RegistrarEgreso => new VistaMovimiento(TipoMovimiento.Egreso, Navegar),
+                Secciones.Movimientos => new VistaMovimientos(),
+                Secciones.Categorias => new VistaCategorias(),
+                Secciones.Usuarios => new VistaUsuarios(),
                 Secciones.MiClave => new CambiarClave(),
                 _ => new Pendiente(_titulos[seccion])
             };
 
             Control? anterior = _vistaActual;
 
-            // Se agrega al fondo (detrás de la vista actual) para que se cree y acomode sin verse
             vista.Dock = DockStyle.Fill;
             _contenido.Controls.Add(vista);
             vista.SendToBack();
 
-            // Ya lista: se quita la anterior y queda visible la nueva
             if (anterior is not null)
                 _contenido.Controls.Remove(anterior);
 
@@ -254,7 +261,6 @@ namespace SistemaContable.Presentacion.Forms
             foreach (var (clave, opcion) in _opciones)
                 opcion.Seleccionado = clave == seccion;
 
-            // La vista anterior se libera después: puede ser la que disparó este clic
             if (anterior is not null)
                 BeginInvoke(new MethodInvoker(anterior.Dispose));
         }
