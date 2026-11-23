@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 
 namespace SistemaContable.Presentacion.Ui.Controles
 {
@@ -122,6 +123,26 @@ namespace SistemaContable.Presentacion.Ui.Controles
         }
 
         public void Limpiar() => _caja.Clear();
+
+        /// <summary>Solo permite números y un separador decimal (acepta punto o coma).</summary>
+        public void PermitirSoloMonto()
+        {
+            _caja.KeyPress += (_, e) =>
+            {
+                char separador = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+                if (char.IsControl(e.KeyChar) || char.IsDigit(e.KeyChar))
+                    return;
+
+                if ((e.KeyChar == '.' || e.KeyChar == ',') && !_caja.Text.Contains(separador))
+                {
+                    e.KeyChar = separador;   // se escribe el separador de la configuración de Windows
+                    return;
+                }
+
+                e.Handled = true;
+            };
+        }
 
         private void AlternarVisibilidad()
         {

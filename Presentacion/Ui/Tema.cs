@@ -1,4 +1,5 @@
-﻿using System.Drawing.Drawing2D;
+﻿using SistemaContable.Presentacion.Ui.Controles;
+using System.Drawing.Drawing2D;
 
 namespace SistemaContable.Presentacion.Ui
 {
@@ -122,5 +123,161 @@ namespace SistemaContable.Presentacion.Ui
             ForeColor = TextoSecundario,
             Margin = new Padding(0, 0, 0, 16)
         };
+
+        /// <summary>Lista desplegable con el estilo de la aplicación.</summary>
+        public static ComboBox Combo() => new()
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            FlatStyle = FlatStyle.Flat,
+            Font = FuenteCampo,
+            BackColor = Color.White,
+            ForeColor = Texto,
+            Anchor = AnchorStyles.Left | AnchorStyles.Right,
+            Margin = new Padding(0),
+            MaxDropDownItems = 12,
+            IntegralHeight = false
+        };
+
+        /// <summary>Selector de fecha con formato dd/MM/yyyy.</summary>
+        public static DateTimePicker SelectorFecha() => new()
+        {
+            Format = DateTimePickerFormat.Custom,
+            CustomFormat = "dd/MM/yyyy",
+            Font = FuenteCampo,
+            Anchor = AnchorStyles.Left | AnchorStyles.Right,
+            Margin = new Padding(0)
+        };
+
+        /// <summary>Rejilla de N columnas iguales para formularios.</summary>
+        public static TableLayoutPanel Rejilla(int columnas)
+        {
+            var rejilla = new TableLayoutPanel
+            {
+                ColumnCount = columnas,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                Margin = new Padding(0)
+            };
+
+            for (int i = 0; i < columnas; i++)
+                rejilla.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / columnas));
+
+            return rejilla;
+        }
+
+        /// <summary>Agrega un control a la rejilla con separación entre columnas.</summary>
+        public static void Agregar(TableLayoutPanel rejilla, Control control, int columna, int fila)
+        {
+            int izquierda = columna == 0 ? 0 : 10;
+            int derecha = columna == rejilla.ColumnCount - 1 ? 0 : 10;
+            control.Margin = new Padding(izquierda, 0, derecha, control.Margin.Bottom);
+            control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            rejilla.Controls.Add(control, columna, fila);
+        }
+
+        /// <summary>Fila de tarjetas de resumen del mismo ancho.</summary>
+        public static TableLayoutPanel FilaTarjetas(params TarjetaResumen[] tarjetas)
+        {
+            var fila = new TableLayoutPanel
+            {
+                ColumnCount = tarjetas.Length,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                Margin = new Padding(0, 0, 0, 20)
+            };
+
+            for (int i = 0; i < tarjetas.Length; i++)
+            {
+                fila.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / tarjetas.Length));
+                tarjetas[i].Margin = i == tarjetas.Length - 1 ? new Padding(0) : new Padding(0, 0, 16, 0);
+                fila.Controls.Add(tarjetas[i], i, 0);
+            }
+
+            return fila;
+        }
+
+        /// <summary>Tabla moderna: sin bordes verticales, encabezado gris, fila seleccionada en azul suave.</summary>
+        public static void EstilizarGrilla(DataGridView grilla)
+        {
+            grilla.AutoGenerateColumns = false;
+            grilla.ReadOnly = true;
+            grilla.AllowUserToAddRows = false;
+            grilla.AllowUserToDeleteRows = false;
+            grilla.AllowUserToResizeRows = false;
+            grilla.AllowUserToOrderColumns = false;
+            grilla.MultiSelect = false;
+            grilla.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            grilla.RowHeadersVisible = false;
+            grilla.BorderStyle = BorderStyle.None;
+            grilla.BackgroundColor = Color.White;
+            grilla.GridColor = BordeSuave;
+            grilla.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            grilla.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            grilla.EnableHeadersVisualStyles = false;
+            grilla.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            grilla.ColumnHeadersHeight = 42;
+            grilla.RowTemplate.Height = 40;
+
+            grilla.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Fondo,
+                ForeColor = TextoSecundario,
+                Font = FuenteEtiqueta,
+                SelectionBackColor = Fondo,
+                SelectionForeColor = TextoSecundario,
+                Padding = new Padding(8, 0, 8, 0),
+                Alignment = DataGridViewContentAlignment.MiddleLeft
+            };
+
+            grilla.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.White,
+                ForeColor = Texto,
+                Font = Fuente,
+                SelectionBackColor = PrimarioSuave,
+                SelectionForeColor = Texto,
+                Padding = new Padding(8, 0, 8, 0),
+                Alignment = DataGridViewContentAlignment.MiddleLeft
+            };
+
+            grilla.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
+        }
+
+        /// <summary>Agrega una columna de texto enlazada a una propiedad. ancho = 0 ocupa el espacio restante.</summary>
+        public static void AgregarColumna(DataGridView grilla, string propiedad, string titulo, int ancho,
+                                          string? formato = null, bool derecha = false)
+        {
+            var columna = new DataGridViewTextBoxColumn
+            {
+                Name = propiedad,
+                DataPropertyName = propiedad,
+                HeaderText = titulo,
+                SortMode = DataGridViewColumnSortMode.NotSortable
+            };
+
+            if (ancho > 0)
+            {
+                columna.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                columna.Width = ancho;
+            }
+            else
+            {
+                columna.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                columna.MinimumWidth = 140;
+            }
+
+            if (formato is not null)
+                columna.DefaultCellStyle.Format = formato;
+
+            if (derecha)
+            {
+                columna.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                columna.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
+
+            grilla.Columns.Add(columna);
+        }
     }
 }
